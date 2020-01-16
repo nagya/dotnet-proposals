@@ -1,4 +1,4 @@
-# Proposed API
+## Proposed API
 ```csharp
 namespace System
 {
@@ -11,12 +11,15 @@ namespace System
 }
 ```
 
-These parallel the Value property and the GetValueOrDefault methods of `Nullable<T>`, but return the value by reference. They're extension methods because of CS8170: Struct members cannot return 'this' or other instance members by reference.
+These parallel the Value property and the GetValueOrDefault methods of `Nullable<T>`,
+but return the value by reference. They're extension methods because of CS8170:
+Struct members cannot return 'this' or other instance members by reference.
 
-They're useful for accessing the value wrapped by a `Nullable<T>` without incurring a copy.
+They're useful for accessing the value wrapped by a `Nullable<T>` without
+incurring a copy.
 
 
-# Reference implementation
+## Reference implementation
 ```csharp
 namespace System
 {
