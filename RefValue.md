@@ -22,6 +22,11 @@ incurring a copy.
 
 
 ## Reference implementation
+
+To avoid a defensive copy, the implementation uses the backing field of 
+`HasValue`, instead of the property, so the field would have to be made internal.
+An alternative would be to mark the property `readonly`.
+
 ```csharp
 namespace System
 {
@@ -29,7 +34,7 @@ namespace System
     {
         public static ref readonly T RefValue<T>(this in T? n) where T : struct
         {
-            if (n.HasValue)
+            if (n.hasValue)
                 return ref n.value;
             else
                 throw new InvalidOperationException();
@@ -42,7 +47,7 @@ namespace System
        
         public static ref readonly T RefValueOrDefault<T>(this in T? n, in T defaultValue) where T : struct
         {
-            return ref n.HasValue ? ref n.value : ref defaultValue;
+            return ref n.hasValue ? ref n.value : ref defaultValue;
         }
     }
 }
