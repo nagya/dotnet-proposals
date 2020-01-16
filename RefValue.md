@@ -1,4 +1,4 @@
-# API proposal: Nullable.RefValue, RefValueOrDefault dotnet/runtime#1534
+# API proposal: Nullable.RefValue, RefValueOrDefault [#1534](https://github.com/dotnet/runtime/issues/1534)
 
 ## Proposed API
 ```csharp
