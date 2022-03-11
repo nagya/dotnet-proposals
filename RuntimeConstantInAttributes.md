@@ -4,9 +4,11 @@ See [Switch and pattern matching on "runtime constants"](RuntimeConstantInPatter
 
 This proposal further narrows the gap between compile time constants and runtime constants, by allowing runtime constants to be used as parameters to attributes.
 
-The value types `RuntimeConstant` and `RuntimeConstant<T>` would be added to the framework, each wrapping a `MemberInfo` (`PropertyInfo` or `FieldInfo` only.)  Both of these types would be allowed as types of attribute parameters. The corresponding attribute argument can be given with a reference to a const field, static readonly field, or static init-only property. The type of the field/property can be any type for `RuntimeConstant`, and must be of type `T` (or subclass) for `RuntimeConstant<T>`.
+The value type `RuntimeConstant<T>` would be added to the framework, wrapping a `MemberInfo` (`PropertyInfo` or `FieldInfo` only.) This type would be allowed to be used as the type of attribute parameters. The corresponding attribute argument can be given with a reference to a const field, static readonly field, or static init-only property. The type of the field/property must be of `T` or subclass. `RuntimeConstant<object>` can be used to allow a field/property of any type.
 
-Via reflection, these attribute arguments are exposed as `MemberInfo` (`FieldInfo` or `PropertyInfo`), and for analyzers as `IPropertySymbol` or `IFieldSymbol`.
+`RuntimeConstant<T>` instances can also be created from regular code with the constructor syntax, similarly how a delegate instance is created from a method group.
+
+Via reflection, attribute arguments of this type are exposed as `MemberInfo` (`FieldInfo` or `PropertyInfo`), and for analyzers as `IFieldSymbol` or `IPropertySymbol`.
 
 Example:
 
@@ -25,37 +27,36 @@ static class Cities
 
 [Location(Cities.BellevueWA)]
 class Foo {}
+
+//...
+
+void Bar()
+{
+    RuntimeConstant<City> city = new RuntimeConstant<City>(Cities.BellevueWA);
+}
 ```
 
 
-Framework types to be added:
+Framework type to be added.  Ideally it would not have public constructors, as it would only be created during attribute instantiation, or via special IL like delegates, and so the constructors could omit the runtime guards.
 
 ```csharp
-public readonly struct RuntimeConstant
-{
-    public MemberInfo info { get; }
-    
-    public RuntimeConstant(FieldInfo info) => this.info = info;
-    public RuntimeConstant(PropertyInfo info) => this.info = info;
-    
-    public object? GetValue() => info is PropertyInfo pi ? return pi.GetValue(null) : ((FieldInfo)info).GetValue(null);
-}
-
 public readonly struct RuntimeConstant<T>
 {
-    public RuntimeConstant constant { get; }
+    public MemberInfo info { get; }
     
     public RuntimeConstant(FieldInfo info)
     {
         if (!typeof(T).IsAssignableFrom(info.FieldType)) throw new InvalidCastException();
-        constant = new RuntimeConstant(info);
+        // also guard for IsLiteral || (IsStatic && IsInitOnly) ?
+        this.info = info;
     }
     public RuntimeConstant(PropertyInfo info)
     {
         if (!typeof(T).IsAssignableFrom(info.PropertyType)) throw new InvalidCastException();
-        constant = new RuntimeConstant(info);
+        // also guard for static, get-only?
+        this.info = info;
     }
     
-    public T GetValue() => (T)constant.GetValue();
+    public T GetValue() => (T)(info is PropertyInfo pi ? pi.GetValue(null) : ((FieldInfo)info).GetValue(null));
 }
 ```
