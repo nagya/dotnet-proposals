@@ -4,7 +4,7 @@ See [Switch and pattern matching on "runtime constants"](RuntimeConstantInPatter
 
 This proposal further narrows the gap between compile time constants and runtime constants, by allowing runtime constants to be used as parameters to attributes.
 
-The value type `RuntimeConstant<T>` would be added to the framework, wrapping a `MemberInfo` (`PropertyInfo` or `FieldInfo` only.) This type would be allowed to be used as the type of attribute parameters. The corresponding attribute argument can be given with a reference to a const field, static readonly field, or static init-only property. The type of the field/property must be of `T` or subclass. `RuntimeConstant<object>` can be used to allow a field/property of any type.
+The value type `RuntimeConstant<T>` would be added to the framework, wrapping a `MemberInfo` (`PropertyInfo` or `FieldInfo` only.) This type would be allowed to be used as the type of attribute parameters. The corresponding attribute argument can be given with a reference to a const field, static readonly field, or static get-only property. The type of the field/property must be of `T` or subclass. `RuntimeConstant<object>` can be used to allow a field/property of any type.
 
 `RuntimeConstant<T>` instances can also be created from regular code with the constructor syntax, similarly how a delegate instance is created from a method group.
 

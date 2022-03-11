@@ -1,6 +1,6 @@
 # Switch and pattern matching on "runtime constants"
 
-A "runtime constant" is a static readonly field or static init-only property of a deeply immutable value or reference type, that is conceptually as constant as a named scalar or string declared with the `const` keyword.
+A "runtime constant" is a static readonly field or static get-only property of a deeply immutable value or reference type, that is conceptually as constant as a named scalar or string declared with the `const` keyword.
 
 The proposal is to allow such runtime constants to be used in case statements, pattern matching against, etc, for each operator the underlying type implements (equality, comparison).
 
